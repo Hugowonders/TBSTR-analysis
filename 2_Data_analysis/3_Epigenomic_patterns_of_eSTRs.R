@@ -117,3 +117,5 @@ estrPeakEnrich_plot <- estrShuffleEmpericalFC %>%
         axis.text = element_text(size = unit(12, "pt")))
 
 ggview(estrPeakEnrich_plot, width = 120, height = 100, units = "mm", dpi = 500)
+
+file.remove("./tmp/", recursive = T)

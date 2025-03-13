@@ -1,7 +1,6 @@
 library(tidyverse)
 library(waddR)
 
-
 # load pSTR dosage of popA, rows are samples and columns are pSTR loci
 dosagePopA <- fread("./Demo/dosage_popA.txt.gz") %>%
   as.data.frame()
@@ -20,7 +19,7 @@ rstPopAB <- map2(dosagePopA, dosagePopB,
                    if (sum(is.na(a))/nPopA > 0.5 || sum(is.na(b))/nPopB > 0.5) {
                      rst <- NA
                    } else {
-                     # in population variance
+                     # in-population variance
                      sw <- mean(c(var(a, na.rm = T), var(b, na.rm = T)))
                      
                      # total variance
@@ -36,7 +35,9 @@ rstPopAB <- map2(dosagePopA, dosagePopB,
                    }
                  })
 
-# calculate TRDS
+write_tsv(trdsPopAB, "./rst.txt")
+
+# calculate Tandem Repeat Disparity Score (TRDS)
 trdsPopAB <- map2(dosagePopA, dosagePopB,
                   function(a, b) {
                     # exclude pSTRs with missing rate > 0.5
@@ -46,8 +47,10 @@ trdsPopAB <- map2(dosagePopA, dosagePopB,
                     if (sum(is.na(a))/nPopA > 0.5 || sum(is.na(b))/nPopB > 0.5) {
                       trds <- NA
                     } else {
-                      # in population variance
+                      # in-population variance
                       trds <- waddR::wasserstein.test(na.omit(a), na.omit(b), method = "ASY")
                     } 
                     return(trds)
                   })
+
+write_tsv(trdsPopAB, "./trds.txt")
