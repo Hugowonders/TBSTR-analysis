@@ -1,4 +1,4 @@
-# exemplified by pSTRs on chr21
+# using pSTRs on chr21 as an example
 # eQLT association analysis
 library(tidyverse)
 library(data.table)
@@ -10,12 +10,11 @@ pstrFlank500k <- fread("./Demo/chr21_pstrs_flanking_gene_500kb.txt.gz")
 mageDosage <- fread("./Demo/chr21_mage_dosage.txt.gz") %>%
   # zscore normalization
   .[, lapply(.SD, scale)]
-  
 
 # gene expression matrix of MAGE samples (inverse normalized TMM)
 mageInvNormTmm <- fread("./Demo/chr21_mage_inv_norm.txt.gz")
 
-# covariants of MAGE samples
+# covariates of gene expression
 mageCovars <- fread("./Demo/mage_covariates.txt.gz")
 
 # exclude pSTRs with missing rate > 0.5
@@ -27,12 +26,12 @@ siteMatch <- which(siteFmiss < 0.5)
 doseGeneLm <- map2(names(mageDosage[, siteMatch, with = F]),
                    mageDosage[, siteMatch, with = F],
                    function(id, dos) {
-                     # test associatins across genes
+                     # test for associations across pstr-gene pairs
                      genes <- unique(pstrFlank500k$geneID[pstrFlank500k$id == id])
                      
                      # LM regression
                      pstrGeneCorPairs <- map(genes, function(g) {
-                       # combine ancestry, sex, and PEER factors as covariants 
+                       # combine ancestry, sex, and PEER factors as covariates 
                        dt <- cbind(mageInvNormTmm[, g, with = F], dos, mageCovars[, -1])
                        
                        # perform LM regression: Y=Xβ+Wα+ϵ
