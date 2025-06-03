@@ -19,5 +19,6 @@ EnsembleTR \
 	--ref reference \
 	--out ${wd}/raw_ensemble_variants.vcf
 
+### Compress and index the output file
 bgzip -f ${wd}/raw_ensemble_variants.vcf
 bcftools index -tf ${wd}/raw_ensemble_variants.vcf.gz
